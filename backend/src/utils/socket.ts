@@ -5,19 +5,17 @@ import { Message } from "../models/Message"
 import { Chat } from "../models/Chat"
 import { User } from "../models/User"
 
-interface SocketWithUserId extends Socket {
-    userId: string;
-}
+
 
 // store online users in memory: userId -> socketId (userId is the key of the map & soketId is the value)
-export const onlineUsers: Map<string, string> = new Map()
+export const onlineUsers: Map<string, Set<string>> = new Map()
 export const initializeSocket = (httpServer: HttpServer) => {
 
     const allowedOrigins = [
         "http://localhost:8081", // Expo mobile
         "http://localhost:5173", // Vite web dev
-        process.env.FRONTEND_URL as string, // Production
-    ];
+        process.env.FRONTEND_URL, // Production
+    ].filter(Boolean) as string[];
 
     const io = new SocketServer(httpServer, {cors: {origin: allowedOrigins}})
 
@@ -35,7 +33,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
             const user = await User.findOne({clerkId});
             if(!user) return next(new Error("User not found"));
 
-            (socket as SocketWithUserId).userId = user._id.toString();
+            socket.data.userId = user._id.toString();
 
             next();
 
@@ -47,21 +45,32 @@ export const initializeSocket = (httpServer: HttpServer) => {
     // this "connection" event name is special and should be written like this
     // it's the event that is triggered when a new client connects to the server
     io.on("connection", (socket) => {
-        const userId = (socket as SocketWithUserId).userId;
+        const userId = socket.data.userId;
 
         // send list of currently online users to the newly connected client
         socket.emit("online-users", { userId: Array.from(onlineUsers.keys()) });
 
         // store user in the onlineUsers map
-        onlineUsers.set(userId, socket.id);
+        // onlineUsers.set(userId, socket.id);
+        const socketIds = onlineUsers.get(userId) ?? new Set<string>();
+        socketIds.add(socket.id);
+        onlineUsers.set(userId, socketIds);
 
         // notify others that this current user is online
         socket.broadcast.emit("user-online", { userId });
 
         socket.join(`user:${userId}`);
 
-        socket.on("join-chat", (chatId: string) => {
-            socket.join(`chat:${chatId}`)
+        socket.on("join-chat", async (chatId: string) => {
+            const chat = await Chat.findOne({
+                _id: chatId,
+                participants: userId,
+            });
+            if (!chat) {
+                socket.emit("socket-error", { message: "Chat not found or access denied" });
+                return;
+            }
+            socket.join(`chat:${chatId}`);
         });
 
         socket.on("leave-chat", (chatId: string) => {
@@ -93,14 +102,16 @@ export const initializeSocket = (httpServer: HttpServer) => {
                 chat.lastMessageAt = new Date();
                 await chat.save();
 
-                await message.populate("sender", "name email avatar");
+                await message.populate("sender", "name avatar");
 
                 // emit to chat room (for users inside the chat)
                 io.to(`chat:${chatId}`).emit("new-message", message);
 
                 // also emit to participants' personal rooms (for chat list view)
                 for(const participantId of chat.participants){
-                    io.to(`user:${participantId}`).emit("new-message", message);
+                    const pid = participantId.toString();
+                    if(pid === userId) continue;
+                    io.to(`user:${pid}`).emit("new-message", message);
                 }
             } catch (error) {
                 socket.emit("socket-error", { message: "Failed to send message" })
@@ -111,10 +122,19 @@ export const initializeSocket = (httpServer: HttpServer) => {
         socket.on("typing", async (data) => {});
 
         socket.on("disconnect", () => {
-            onlineUsers.delete(userId);
+            // onlineUsers.delete(userId);
+            const socketIds = onlineUsers.get(userId);
+            if(!socketIds) return;
 
-            // notify others
-            socket.broadcast.emit("user-offline", { userId });
+            socketIds.delete(socket.id);
+            if(socketIds.size === 0){
+                onlineUsers.delete(userId);
+
+                // notify others
+                socket.broadcast.emit("user-offline", { userId });
+            }
+
+           
         });
     });
 
