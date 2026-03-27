@@ -1,4 +1,5 @@
 import { useSSO } from "@clerk/clerk-expo";
+import * as Linking from 'expo-linking'
 import { useState } from "react";
 import { Alert } from "react-native";
 
@@ -12,14 +13,15 @@ function useAuthSocial() {
         setLoadingStrategy(strategy);
 
         try {
-            const {createdSessionId, setActive} = await startSSOFlow({strategy});
-            if(!createdSessionId || !setActive){
+            const {createdSessionId, setActive} = await startSSOFlow({strategy, redirectUrl: Linking.createURL("/(auth)/sso-callback")});
+            if(createdSessionId && setActive){
+                await setActive({session: createdSessionId})   
+            }else{
                 const provider = strategy === "oauth_google" ? "Google" : "Apple";
                 Alert.alert(
                     "Sign-in incomplete",
                     `${provider} sign-in did not complete. Please try again.`
                 );
-                return;
             }
         } catch (error) {
             console.log("Error in social auth:", error);
