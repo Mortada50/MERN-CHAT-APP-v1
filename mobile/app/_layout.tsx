@@ -29,6 +29,7 @@ Sentry.init({
       enableHTTPTimings: true,
     }),
   ],
+   tracesSampleRate: 0.1,
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,

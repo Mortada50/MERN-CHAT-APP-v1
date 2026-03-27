@@ -13,7 +13,7 @@ function useAuthSocial() {
         setLoadingStrategy(strategy);
 
         try {
-            const {createdSessionId, setActive} = await startSSOFlow({strategy, redirectUrl: Linking.createURL("/(auth)/sso-callback")});
+            const {createdSessionId, setActive} = await startSSOFlow({strategy, redirectUrl: Linking.createURL("/sso-callback")});
             if(createdSessionId && setActive){
                 await setActive({session: createdSessionId})   
             }else{

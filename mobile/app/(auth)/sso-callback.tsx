@@ -11,6 +11,9 @@ export default function SSOCallback() {
     if (isLoaded && isSignedIn) {
       router.replace("/(tabs)");
     }
+    if (isLoaded && !isSignedIn) {
+    router.replace("/(auth)");
+}
   }, [isLoaded, isSignedIn]);
   return (
      <View className="flex-1 justify-center items-center bg-gray-800">
