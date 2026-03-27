@@ -1,6 +1,6 @@
-import { View, Text, ScrollView } from 'react-native'
+import React from 'react';
+import { ScrollView, Text } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React from 'react'
 
 const ChatsTab = () => {
   const insets = useSafeAreaInsets();
@@ -12,8 +12,8 @@ const ChatsTab = () => {
         paddingBottom: insets.bottom,
       }}
     >
+      
       <Text className='text-white'>ChatsTab1</Text>
-      <Text>hello world</Text>
     </ScrollView>
   );
 };
