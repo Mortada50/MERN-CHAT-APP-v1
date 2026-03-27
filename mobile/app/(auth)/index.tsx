@@ -25,7 +25,7 @@ const AuthScreen = () => {
             style={{width: 100, height: 100, marginVertical: -20}}
             contentFit='contain'
           />
-          <Text className='text-4xl font-bold text-primary font-seriftracking-wider uppercase'>memo</Text>
+          <Text className='text-4xl font-bold text-primary font-serif tracking-wider uppercase'>memo</Text>
         </View>
 
         {/* CENTER SECTION - HERO IMG */}
@@ -44,7 +44,7 @@ const AuthScreen = () => {
             <Text className='text-5xl font-bold text-foreground text-center font-sans'>
               Connect & Chat
             </Text>
-            <Text className='text-3xl font-bold text-primary font-mono'>Seamlesly</Text>
+            <Text className='text-3xl font-bold text-primary font-mono'>Seamlessly</Text>
           </View>
 
           {/* AUTH BUTTONS */}

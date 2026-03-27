@@ -17,7 +17,13 @@ const ProfileTab = () => {
     >
       <Text className='text-white'>ProfileTab</Text>
       <Pressable
-        onPress={() => signOut()}
+       onPress={async () => {
+          try {
+            await signOut();
+          } catch (error) {
+            console.error("Sign-out failed", error);
+          }
+        }}
         className='mt-4 bg-red-600 px-4 py-2 rounded-lg'
       >
         <Text>Signout</Text>
