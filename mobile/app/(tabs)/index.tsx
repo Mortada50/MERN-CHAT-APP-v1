@@ -8,6 +8,7 @@ import ChatItem from '@/components/ChatItem';
 import EmptyUI from '@/components/EmptyUI';
 import { Chat } from '@/types';
 
+
 const ChatsTab = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -47,18 +48,6 @@ const ChatsTab = () => {
   };
 
   return (
-    // <ScrollView
-    //   className='bg-surface'
-    //   contentContainerStyle={{
-    //     paddingTop: insets.top + 20,
-    //     paddingBottom: insets.bottom,
-    //   }}
-    // >
-      
-    //   <Text className='text-white'>ChatsTab1</Text>
-    // </ScrollView>
-
-    
 
     <SafeAreaView className='flex-1 bg-surface'>
       <FlatList 
