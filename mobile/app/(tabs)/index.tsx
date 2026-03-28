@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from 'expo-router';
 import { useChats } from '@/hooks/useChats';
@@ -11,7 +11,7 @@ import { Chat } from '@/types';
 const ChatsTab = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const {data: chats, isLoading, error} = useChats();
+  const {data: chats, isLoading, error, refetch} = useChats();
   
   if(isLoading){
     return (
@@ -25,9 +25,14 @@ const ChatsTab = () => {
     return (
       <View className='flex-1 bg-surface items-center justify-center'>
         <Text className='text-red-500'>Failed to load chats</Text>
+        <Pressable className='mt-4 px-4 py-2 bg-primary rounded-lg' onPress={() => refetch()}>
+          <Text className='text-foreground'>Retry</Text>
+        </Pressable>
       </View>
     )
   }
+
+
 
   const handleChatPress = (chat: Chat) => {
     router.push({
