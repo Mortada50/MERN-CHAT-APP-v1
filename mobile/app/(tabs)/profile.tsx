@@ -1,6 +1,5 @@
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import React from 'react'
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import {Image} from "expo-image"
 import { Ionicons } from '@expo/vector-icons';
@@ -33,7 +32,6 @@ const MENU_SECTIONS = [
 ];
 
 const ProfileTab = () => {
-  const insets = useSafeAreaInsets();
   const {signOut} = useAuth();
   const {user} = useUser();
 
