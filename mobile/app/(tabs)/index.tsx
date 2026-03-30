@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from 'expo-router';
 import { useChats } from '@/hooks/useChats';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +10,6 @@ import { Chat } from '@/types';
 
 
 const ChatsTab = () => {
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const {data: chats, isLoading, error, refetch} = useChats();
   
@@ -66,7 +65,7 @@ const ChatsTab = () => {
           iconColor='#6B6B70'
           iconSize={64}
           buttonLabel='New Chat'
-          onPressButton={() => console.log("press")}
+          onPressButton={() => router.push("/new-chat")}
 
         />}
       />
@@ -81,13 +80,13 @@ function Header() {
   const router = useRouter();
 
   return(
-    <View className='px-5 pt-2 pb-4'>
+    <View className='px-3 pt-2 pb-4'>
       <View className='flex-row items-center justify-between'>
         <Text className='text-2xl font-bold text-foreground'>Chats</Text>
       
         <Pressable 
           className='size-10 bg-primary rounded-full items-center justify-center'
-          // onPress={() => router.push("/new-chat")}
+          onPress={() => router.push("/new-chat")}
         >
           <Ionicons name='create-outline' size={20} color={"#0D0D0F"} />
         </Pressable>
