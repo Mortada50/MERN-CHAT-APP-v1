@@ -21,4 +21,3 @@ export default function SSOCallback() {
     </View>
   );
 }
-// todo: عندما يتم تسجيل الدخول عند التحميل يرجع لصفحة تسجيل الدخول 
