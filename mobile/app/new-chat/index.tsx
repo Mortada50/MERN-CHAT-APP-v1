@@ -7,12 +7,14 @@ import { useGetOrCreateChat } from '@/hooks/useChats'
 import { User } from '@/types'
 import { useUser } from '@/hooks/useUser'
 import UserItem from '@/components/UserItem'
+import { useSocketStore } from '@/lib/socket'
 
 const NewChatScreen = () => {
     
     const [searchQuery, setSearchQuery] = useState("");
     const {data: allUsers, isLoading, error} = useUser();
     const {mutate: getOrCreateChat, isPending: isCreatingChat} = useGetOrCreateChat();
+    const {onlineUsers} = useSocketStore()
 
     // client-side filtering
     const users = allUsers?.filter((u: User) => {
@@ -98,7 +100,7 @@ const NewChatScreen = () => {
                             <UserItem 
                                 key={user._id}
                                 user={user}
-                                isOnline={true}
+                                isOnline={onlineUsers.has(user._id)}
                                 onPress = {() => handleUserSelect(user)}
                             />
                         ))}

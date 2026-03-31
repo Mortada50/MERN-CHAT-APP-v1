@@ -6,6 +6,7 @@ import { tokenCache } from '@clerk/clerk-expo/token-cache'
 import AuthSync from "@/components/AuthSync";
 import {StatusBar} from "expo-status-bar"
 import * as Sentry from '@sentry/react-native';
+import SocketConnection from "@/components/SocketConnection";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -45,6 +46,7 @@ export default Sentry.wrap(function RootLayout() {
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <QueryClientProvider client={queryClient}>
         <AuthSync />
+        <SocketConnection />
         <StatusBar style="light" />
         <Stack screenOptions={{headerShown: false, contentStyle: {backgroundColor: "#0D0D0F"}}}>
           <Stack.Screen name="(auth)" options={{animation: "fade"}}/>

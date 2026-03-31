@@ -16,7 +16,6 @@ const AuthScreen = () => {
 
   return (
     <View className='flex-1 bg-surface-dark'>
-      {/* todo: animated orbs */}
       <View className='absolute inset-0 overflow-hidden'>
         <LinearGradient
           colors={["#0D0D0F", "#1A1A2E", "#16213E", "#0D0D0F"]}
