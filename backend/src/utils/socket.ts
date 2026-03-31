@@ -35,7 +35,8 @@ export const initializeSocket = (httpServer: HttpServer) => {
 
       next();
     } catch (error: any) {
-      next(new Error(error));
+      const message = error instanceof Error ? error.message : String(error);
+      next(new Error(message));
     }
   });
 
@@ -94,8 +95,13 @@ export const initializeSocket = (httpServer: HttpServer) => {
         io.to(`chat:${chatId}`).emit("new-message", message);
 
         // also emit to participants' personal rooms (for chat list view)
+          const socketsInChatRoom = await io.in(`chat:${chatId}`).fetchSockets();
+          const userIdsInChatRoom = new Set(socketsInChatRoom.map(s => s.data.userId));
         for (const participantId of chat.participants) {
-          io.to(`user:${participantId}`).emit("new-message", message);
+          // Only emit to personal room if user is not already in the chat room
+          if (!userIdsInChatRoom.has(participantId.toString())) {
+            io.to(`user:${participantId}`).emit("new-message", message);
+          }
         }
       } catch (error) {
         socket.emit("socket-error", { message: "Failed to send message" });

@@ -11,8 +11,8 @@ const ChatItem = ({chat, onPress}: {chat: Chat, onPress: () => void}) => {
     
 
 
-    const isOnline = onlineUsers.has(participant._id);
-    const isTyping = typingUsers.get(chat._id) === participant._id;
+    const isOnline = participant ? onlineUsers.has(participant._id) : false;
+    const isTyping = participant ? typingUsers.get(chat._id) === participant._id : false;
     const hasUnread = unreadChats.has(chat._id);
   return (
     <Pressable className='flex-row items-center py-3 active:opacity-70' onPress={onPress}>

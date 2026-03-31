@@ -93,6 +93,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
       // Update chat's lastMessage directly for instant UI update
       queryClient.setQueryData<Chat[]>(["chats"], (oldChats) => {
+        if (!oldChats) return oldChats;
         return oldChats?.map((chat) => {
           if (chat._id === message.chat) {
             return {
@@ -200,11 +201,13 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       return [...old, optimisticMessage];
     });
 
-    socket.emit("send-message", { chatId, text });
+    socket.emit("send-message", { chatId, text, tempId });
 
     Sentry.logger.info("Message sent successfully", { chatId, messageLength: text.length });
 
-    const errorHandler = (error: { message: string }) => {
+    const errorHandler = (error: { message: string; tempId?: string }) => {
+      // Only handle if this error is for our message
+      if (error.tempId && error.tempId !== tempId) return;
       Sentry.logger.error("Failed to send message", {
         chatId,
         error: error.message,
@@ -216,7 +219,10 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       socket.off("socket-error", errorHandler);
     };
 
-    socket.once("socket-error", errorHandler);
+    socket.on("socket-error", errorHandler);
+    
+    // Clean up after reasonable timeout if no error
+    setTimeout(() => socket.off("socket-error", errorHandler), 10000);
   },
 
   sendTyping: (chatId, isTyping) => {

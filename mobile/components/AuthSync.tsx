@@ -2,7 +2,6 @@ import { useAuthCallback } from "@/hooks/useAuth"
 import { useEffect, useRef } from "react"
 import { useAuth, useUser } from "@clerk/clerk-expo"
 import * as Sentry from "@sentry/react-native"
-import { useSocketStore } from "@/lib/socket"
 const AuthSync = () => {
     const {isSignedIn} = useAuth()
     const {user} = useUser()
