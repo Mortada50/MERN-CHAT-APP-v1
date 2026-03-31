@@ -16,7 +16,7 @@ import MessageBubble from '@/components/MessageBubble'
 import {
   KeyboardAvoidingView,
   KeyboardProvider,
-} from 'react-native-keyboard-controller'  // ✅ استبدال KAV الأصلي
+} from 'react-native-keyboard-controller'  
 
 type ChatParams = {
   id: string
