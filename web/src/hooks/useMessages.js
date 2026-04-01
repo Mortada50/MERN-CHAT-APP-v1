@@ -9,6 +9,9 @@ export const useMessages = (chatId) => {
     queryKey: ["messages", chatId],
     queryFn: async () => {
       const token = await getToken();
+        if (!token) {
+          throw new Error("Missing auth token for messages query");
+        }
       const res = await api.get(`/messages/chat/${chatId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });

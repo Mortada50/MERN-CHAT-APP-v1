@@ -14,7 +14,11 @@ export const useSocketConnection = (activeChatId) => {
     if (isSignedIn) {
       getToken().then((token) => {
         if (token) connect(token, queryClient);
-      });
+      })
+      .catch((err) => {
+          console.error("Failed to get auth token:", err);
+        });
+
     } else {
       disconnect();
     }

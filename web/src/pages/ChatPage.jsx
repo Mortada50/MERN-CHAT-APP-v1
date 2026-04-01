@@ -14,8 +14,7 @@ import { ChatInput } from "../components/ChatInput";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { NewChatModal } from "../components/NewChatModal";
 
-// this code can be a lot cleaner, but here we try to keep it simple yet working
-// feel free to refactor it as you wish ✨
+
 function ChatPage() {
   const { data: currentUser } = useCurrentUser();
 
@@ -29,7 +28,7 @@ function ChatPage() {
   const typingTimeoutRef = useRef(null);
 
   const { socket, setTyping, sendMessage } = useSocketStore();
-
+ 
   useSocketConnection();
 
   const { data: chats = [], isLoading: chatsLoading } = useChats();

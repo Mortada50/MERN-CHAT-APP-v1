@@ -10,7 +10,9 @@ function useUserSync() {
     const {mutate: syncUser, isPending, isSuccess} = useMutation({
         mutationFn: async () => {
             const token = await getToken();
-            
+            if (!token) {
+                throw new Error("Missing auth token for user sync");
+            }
             const res = await api.post(
                 "/auth/callback",
                 {},
