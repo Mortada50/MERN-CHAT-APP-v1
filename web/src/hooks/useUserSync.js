@@ -3,14 +3,16 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import api from "../lib/axios";
 
-import React from "react";
 
 function useUserSync() {
     const {isSignedIn, getToken} = useAuth()
 
     const {mutate: syncUser, isPending, isSuccess} = useMutation({
         mutationFn: async () => {
-            const token = getToken();
+            const token = await getToken();
+            if (!token) {
+                throw new Error("Missing auth token for user sync");
+            }
             const res = await api.post(
                 "/auth/callback",
                 {},
@@ -18,7 +20,7 @@ function useUserSync() {
                     headers: {Authorization: `Bearer ${token}`}
                 }
             );
-             return res;
+             return res.data;
         }
     });
 

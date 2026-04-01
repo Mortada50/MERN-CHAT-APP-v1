@@ -10,12 +10,14 @@ import {BrowserRouter} from "react-router"
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if(!PUBLISHABLE_KEY){
+  console.log("missing publishable key");
   throw new Error("Missing pyblishable key");
+  
 }
 
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
@@ -25,4 +27,4 @@ createRoot(document.getElementById('root')).render(
       </QueryClientProvider>
     </ClerkProvider>
   </StrictMode>,
-)
+);
