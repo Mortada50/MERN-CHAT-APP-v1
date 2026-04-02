@@ -33,7 +33,7 @@ export async function authCallback(req: Request, res: Response, next: NextFuncti
                       ? `${clerkUser.firstName} ${clerkUser.lastName || ""}`.trim()
                       : clerkUser.emailAddresses[0]?.emailAddress?.split("@")[0],
                 email: clerkUser.emailAddresses[0]?.emailAddress,
-                avatar: clerkUser.imageUrl
+                avatar: clerkUser?.imageUrl
                     
             });
         }

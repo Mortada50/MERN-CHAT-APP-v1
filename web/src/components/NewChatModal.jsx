@@ -56,7 +56,7 @@ export function NewChatModal({ onStartChat, isPending, isOpen, onClose }) {
                   disabled={isPending}
                   className="btn btn-ghost justify-start gap-3 w-full normal-case">
                   <div className="relative">
-                    <img src={u.avatar} className="w-10 h-10 rounded-full" />
+                    <img src={u?.avatar} className="w-10 h-10 rounded-full" />
                     {isOnline(u._id) && (
                       <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-success rounded-full border-2 border-base-200" />
                     )}

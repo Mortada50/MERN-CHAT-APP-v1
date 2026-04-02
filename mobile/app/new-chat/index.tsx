@@ -34,7 +34,7 @@ const NewChatScreen = () => {
                         id: chat._id,
                         participantId: chat.participant._id,
                         name: chat.participant.name,
-                        avatar: chat.participant.avatar,
+                        avatar: chat.participant?.avatar,
                     },
                 });
                 }, 100)

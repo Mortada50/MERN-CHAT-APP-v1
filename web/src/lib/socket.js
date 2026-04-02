@@ -133,7 +133,7 @@ export const useSocketStore = create((set, get) => ({
         _id: currentUser._id,
         name: currentUser.fullName || currentUser.firstName || "You",
         email: currentUser.primaryEmailAddress?.emailAddress || "",
-        avatar: currentUser.imageUrl,
+        avatar: currentUser?.imageUrl,
       },
       text,
       createdAt: new Date().toISOString(),
