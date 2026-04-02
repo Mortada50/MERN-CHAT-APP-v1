@@ -9,7 +9,7 @@ const ChatItem = ({chat, onPress}: {chat: Chat, onPress: () => void}) => {
 
     const {onlineUsers, typingUsers, unreadChats} = useSocketStore();
     
-
+    if(!participant) return null;
 
     const isOnline = participant ? onlineUsers.has(participant._id) : false;
     const isTyping = participant ? typingUsers.get(chat._id) === participant._id : false;

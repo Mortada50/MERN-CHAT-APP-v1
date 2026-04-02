@@ -38,6 +38,9 @@ export const useApi = () => {
   const apiWithAuth = useCallback(
     async <T>(config: Parameters<typeof api.request>[0]) => {
       const token = await getToken();
+      if(!token){
+        throw new Error("No auth token available")
+      }
       return api.request<T>({
         ...config,
         headers: { ...config.headers, ...(token && { Authorization: `Bearer ${token}` }) },
