@@ -35,13 +35,14 @@ const ChatsTab = () => {
 
 
   const handleChatPress = (chat: Chat) => {
+    if (!chat.participant?._id) return;
     router.push({
       pathname: "/chat/[id]",
       params: {
         id: chat._id,
         participantId: chat.participant._id,
         name: chat.participant.name,
-        avatar: chat.participant?.avatar,
+        avatar: chat.participant.avatar ?? "",
       }
     })
   };

@@ -26,6 +26,7 @@ const NewChatScreen = () => {
     const handleUserSelect = (user: User) => {
         getOrCreateChat(user._id, {
             onSuccess: (chat) => {
+                if (!chat.participant?._id) return;
                 router.dismiss(); // go -1
                 setTimeout(() => {
                      router.push({
@@ -34,7 +35,7 @@ const NewChatScreen = () => {
                         id: chat._id,
                         participantId: chat.participant._id,
                         name: chat.participant.name,
-                        avatar: chat.participant?.avatar,
+                        avatar: chat.participant.avatar ?? "",
                     },
                 });
                 }, 100)
