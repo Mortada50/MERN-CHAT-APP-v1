@@ -83,7 +83,7 @@ const ChatDetailScreen = () => {
       _id: currentUser._id,
       name: currentUser.name,
       email: currentUser.email,
-      avatar: currentUser.avatar,
+      avatar: currentUser?.avatar,
     })
     setMessageText('')
     setIsSending(false)
