@@ -3,13 +3,14 @@ import type { Chat } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useChats = () => {
-    const {apiWithAuth} = useApi();
+    const {apiWithAuth, isAuthReady} = useApi();
     return useQuery({
         queryKey: ["chats"],
         queryFn: async () => {
             const {data} = await apiWithAuth<Chat[]>({method: "GET", url: "/chats"});
             return data ;
         },
+        enabled: isAuthReady,
     });
 };
 
