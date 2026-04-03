@@ -3,7 +3,7 @@ import { useApi } from "@/lib/axios";
 import type { Message } from "@/types";
 
 export const useMessages = (chatId: string) => {
-    const {apiWithAuth} = useApi();
+    const {apiWithAuth, isAuthReady} = useApi();
 
     return useQuery({
         queryKey: ["messages", chatId],
@@ -14,6 +14,6 @@ export const useMessages = (chatId: string) => {
             });
             return data;
         },
-        enabled: !!chatId,
+        enabled: !!chatId  && isAuthReady,
     })
 }

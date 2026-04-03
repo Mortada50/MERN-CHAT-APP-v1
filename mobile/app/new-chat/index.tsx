@@ -12,7 +12,7 @@ import { useSocketStore } from '@/lib/socket'
 const NewChatScreen = () => {
     
     const [searchQuery, setSearchQuery] = useState("");
-    const {data: allUsers, isLoading, error} = useUser();
+    const {data: allUsers, isLoading, error, refetch} = useUser();
     const {mutate: getOrCreateChat, isPending: isCreatingChat} = useGetOrCreateChat();
     const {onlineUsers} = useSocketStore()
 
@@ -82,6 +82,15 @@ const NewChatScreen = () => {
                 {isCreatingChat || isLoading ? (
                     <View className='flex-1 items-center justify-center'>
                         <ActivityIndicator size={"large"} color={"#F4A261"} />
+                    </View> 
+                     ) : error ? (
+                    <View className='flex-1 items-center justify-center px-5'>
+                        <Ionicons name='alert-circle-outline' size={64} color={"#E76F51"} />
+                        <Text className='text-foreground text-lg mt-4'>Failed to load users</Text>
+                        <Text className='text-subtle-foreground text-sm mt-1 text-center'>Please retry after the server wakes up</Text>
+                        <Pressable className='mt-5 px-4 py-2 bg-primary rounded-full' onPress={() => refetch()}>
+                            <Text className='text-surface font-semibold'>Retry</Text>
+                        </Pressable>
                     </View>
                 ) : !users || users.length === 0 ? (
                     <View className='flex-1 items-center justify-center px-5'>

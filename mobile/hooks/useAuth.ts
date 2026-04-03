@@ -16,7 +16,7 @@ export const useAuthCallback = () => {
 };
 
 export const useCurrentUser = () => {
-    const { apiWithAuth } = useApi();
+    const { apiWithAuth, isAuthReady  } = useApi();
 
     return useQuery({
         queryKey: ["currentUser"],
@@ -24,5 +24,6 @@ export const useCurrentUser = () => {
             const {data} = await apiWithAuth<User>({ method: "GET", url: "/auth/me" });
             return data;
         },
+        enabled: isAuthReady,
     });
 }

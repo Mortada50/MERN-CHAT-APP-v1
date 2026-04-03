@@ -2,38 +2,40 @@ import { useAuthCallback } from "@/hooks/useAuth"
 import { useEffect, useRef } from "react"
 import { useAuth, useUser } from "@clerk/clerk-expo"
 import * as Sentry from "@sentry/react-native"
+import type { AxiosError } from "axios";
+
+const MAX_SYNC_ATTEMPTS = 4;
 
 const AuthSync = () => {
-    const {isSignedIn, getToken} = useAuth()
+    const {isSignedIn, isLoaded} = useAuth()
     const {user} = useUser()
     const {mutate: syncUser} = useAuthCallback();
     const hasSynced = useRef(false);
+    const isSyncInFlight = useRef(false);
+    const retryTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     
     useEffect(() => {
-        if(isSignedIn && user && !hasSynced.current){
-            const syncWithRetry = async () => {
-                let token = null;
-                let attempts = 0;
-                
-                while (!token && attempts < 5) {
-                    token = await getToken();
-                    if (!token) {
-                        attempts++;
-                        await new Promise(res => setTimeout(res, 1000 * attempts));
-                    }
-                }
-                
-                if (!token) {
-                    console.log("Token never became available, skipping sync");
-                    Sentry.logger.warn("Auth token never became available", {
-                        userId: user.id,
-                    });
-                    return;
-                }
-                
-                hasSynced.current = true;
+          if(!isLoaded) return;
+
+        if(!isSignedIn){
+            hasSynced.current = false;
+            isSyncInFlight.current = false;
+            if (retryTimeout.current) clearTimeout(retryTimeout.current);
+            return;
+        }
+
+        if(!user || hasSynced.current || isSyncInFlight.current) return;
+
+        let cancelled = false;
+
+        const attemptSync = (attempt: number) => {
+            if (cancelled) return;
+            isSyncInFlight.current = true;
+
                 syncUser(undefined, {
                     onSuccess: (data) => {
+                        isSyncInFlight.current = false;
+                        hasSynced.current = true;
                         console.log("User synced with backend: ", data.name);
                         Sentry.logger.info(Sentry.logger.fmt`User synced with backend: ${data.name}`, {
                             userId: user.id,
@@ -41,22 +43,40 @@ const AuthSync = () => {
                         });
                     },
                     onError: (error) => {
+                         isSyncInFlight.current = false;
                         hasSynced.current = false;
                         console.log("User sync failed: ", error);
+                         const status = (error as AxiosError)?.response?.status;
+                        const shouldRetry = attempt < MAX_SYNC_ATTEMPTS && (!status || status === 401 || status >= 500);
+
+                        if (shouldRetry) {
+                            const delay = 1000 * attempt;
+                            retryTimeout.current = setTimeout(() => attemptSync(attempt + 1), delay);
+                            Sentry.logger.warn("Retrying user sync", {
+                                userId: user.id,
+                                attempt,
+                                status,
+                                nextRetryInMs: delay,
+                            });
+                            return;
+                        }
+
                         Sentry.logger.error("Failed to sync user with backend", {
                             userId: user.id,
+                             status,
                             error: error instanceof Error ? error.message : String(error)
                         });
                     },
                 });
             };
             
-            syncWithRetry();
-        }
-        if(!isSignedIn){
-            hasSynced.current = false;
-        }
-    }, [isSignedIn, user, syncUser, getToken])
+              attemptSync(1);
+
+        return () => {
+            cancelled = true;
+            if (retryTimeout.current) clearTimeout(retryTimeout.current);
+        };
+    }, [isLoaded, isSignedIn, user, syncUser])
     
   return null
 }
